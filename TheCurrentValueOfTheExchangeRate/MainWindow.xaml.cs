@@ -1,16 +1,9 @@
 ﻿using Newtonsoft.Json.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace TheCurrentValueOfTheExchangeRate
 {
@@ -19,7 +12,7 @@ namespace TheCurrentValueOfTheExchangeRate
     /// </summary>
     public partial class MainWindow : Window
     {
-        private List <ExchangeValue> CurrencyList = new List<ExchangeValue>();
+        private List<ExchangeValue> CurrencyList = new List<ExchangeValue>();
 
         public MainWindow()
         {
@@ -29,19 +22,22 @@ namespace TheCurrentValueOfTheExchangeRate
 
         private void Count_Click(object sender, RoutedEventArgs e)
         {
-            Counter(Decimal.Parse(FromValueTextBox.Text));
+            if (CheckFields()) 
+            {
+                Counter(Decimal.Parse(FromValueTextBox.Text));
+            }
 
         }
 
         private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
         {
-            Regex regex = new Regex("[^0-9]+");
+            Regex regex = new Regex("[^0-9]+{,}[^0-9]2");
             e.Handled = regex.IsMatch(e.Text);
         }
 
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            
+
         }
 
         private async void Counter(decimal fromValue)
@@ -49,7 +45,7 @@ namespace TheCurrentValueOfTheExchangeRate
             decimal resultValue = fromValue;
             RestClient restClient = new RestClient();
 
-            if(startExchange.SelectedValue.ToString() != "PLN")
+            if (startExchange.SelectedValue.ToString() != "PLN")
             {
                 var rate = await restClient.GetCurrencyRate(startExchange.SelectedValue.ToString());
                 resultValue = resultValue / rate;
@@ -70,7 +66,7 @@ namespace TheCurrentValueOfTheExchangeRate
             try
             {
                 JArray exchangeRates = await client.GetExchangeRatesAsync();
-                
+
 
                 // Przykładowe przetwarzanie danych
                 foreach (var table in exchangeRates)
@@ -105,6 +101,45 @@ namespace TheCurrentValueOfTheExchangeRate
 
             startExchange.ItemsSource = items;
             endExchange.ItemsSource = items;
+        }
+
+        private bool CheckFields()
+        {
+            var resultOfFieldsCheck = true;
+
+            if (string.IsNullOrEmpty(FromValueTextBox.Text)) 
+            {
+                resultOfFieldsCheck = false;
+                MessageBox.Show("Start value of rate can not be empty");
+            }
+
+            if (!Decimal.TryParse(FromValueTextBox.Text, out var result))
+            {
+                resultOfFieldsCheck = false;
+                MessageBox.Show($"Value {FromValueTextBox.Text} is incorrect");
+            }
+
+            var fromValueParts = FromValueTextBox.Text.Split([',', '.']);
+
+            if(fromValueParts.Length == 2 && fromValueParts[1].Length > 2)
+            {
+                resultOfFieldsCheck = false;
+                MessageBox.Show("The amount can have a maximum of two decimal digits");
+            }
+
+            if (startExchange.SelectedValue == null || startExchange.SelectedValue.ToString() == string.Empty)
+            {
+                resultOfFieldsCheck = false;
+                MessageBox.Show("Start exchange can not be empty");
+            }
+
+            if (string.IsNullOrEmpty(endExchange.SelectedValue?.ToString()))
+            {
+                resultOfFieldsCheck = false;
+                MessageBox.Show("End exchange can not be empty");
+            }
+
+            return resultOfFieldsCheck;
         }
     }
 }
