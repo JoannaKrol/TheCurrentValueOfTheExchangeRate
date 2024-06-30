@@ -13,7 +13,7 @@
                     <TextBlock Text="Kwota" Margin="20,20,120,0" Height="20"/>
                     <TextBox x:Name="FromValueTextBox" Width="160" Height="20" Margin="20,0,20,0" PreviewTextInput="NumberValidationTextBox"/>
                 </StackPanel>
-                <ComboBox x:Name="startExchange" Width="80" Margin="0,40,20,40" Text="PLN" SelectionChanged="ComboBox_SelectionChanged"/>
+                <ComboBox x:Name="startExchange" Width="80" Margin="0,40,20,40" Text="PLN"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left" Width="300">
                 <StackPanel Orientation="Vertical"  VerticalAlignment="Top" HorizontalAlignment="Left">

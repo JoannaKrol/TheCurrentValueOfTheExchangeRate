@@ -10,5 +10,10 @@
             Currency = currency;
             Code = code;
         }
+
+        public override string ToString()
+        {
+            return Code;
+        }
     }
 }
